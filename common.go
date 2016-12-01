@@ -1,11 +1,13 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -14,25 +16,27 @@ const (
 )
 
 const (
-	fileSystemServicePrefix = "v1/api/file"
+	apiPrefix     = "api/v1"
+	pathsPrefix   = "paths"
+	streamsPrefix = "streams"
 
-	// Common endpoints
-	serviceName    = "service_name"
-	serviceVersion = "service_version"
-
-	// File System endpoints
-	createDirectory = "create_directory"
+	// Path endpoints
+	createDirectory = "create-directory"
+	createFile      = "create-file"
 	delete          = "delete"
-	download        = "download"
 	exists          = "exists"
 	free            = "free"
-	getStatus       = "status"
-	listStatus      = "list_status"
+	getStatus       = "get-status"
+	listStatus      = "list-status"
 	mount           = "mount"
 	rename          = "rename"
-	setAttribute    = "set_attribute"
+	setAttribute    = "set-attribute"
 	unmount         = "unmount"
-	upload          = "upload"
+
+	// Stream endpoints
+	close = "close"
+	read  = "read"
+	write = "write"
 )
 
 type Client struct {
@@ -43,86 +47,54 @@ type Client struct {
 }
 
 func (client *Client) endpointURL(endpoint string, params map[string]string) string {
-	paramsStr := ""
+	paramsStr := []string{}
 	for key, value := range params {
-		paramsStr += key + "=" + url.QueryEscape(value) + "&"
+		paramsStr = append(paramsStr, key+"="+url.QueryEscape(value))
 	}
-	return "http://" + client.host + ":" + fmt.Sprintf("%v", client.port) + "/" + client.prefix + "/" + endpoint + "?" + paramsStr
+	return fmt.Sprintf("http://%v:%v/%v/%v?%v", client.host, client.port, client.prefix, endpoint, strings.Join(paramsStr, "&"))
 }
 
-func (client *FileSystem) get(method string, params map[string]string, result interface{}) error {
-	resp, err := client.http.Get(client.endpointURL(method, params))
+func join(components ...string) string {
+	return strings.Join(components, "/")
+}
+
+func (client *FileSystem) post(method string, params map[string]string, input interface{}, output interface{}) error {
+	var b bytes.Buffer
+	if err := json.NewEncoder(&b).Encode(input); err != nil {
+		return fmt.Errorf("Encode() failed: %v", err)
+	}
+	resp, err := client.http.Post(client.endpointURL(method, params), "application/json", &b)
 	if err != nil {
 		return err
 	}
 	if err := checkResponse(resp); err != nil {
 		return err
 	}
-	if err := processResponse(resp, result); err != nil {
+	if err := processResponse(resp, output); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (client *FileSystem) post(method string, params map[string]string) error {
-	resp, err := client.http.Post(client.endpointURL(method, params), "application/json", nil)
-	if err != nil {
-		return err
-	}
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-	if err := processResponse(resp, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (client *Client) ServiceName() (string, error) {
-	resp, err := http.Get(client.endpointURL(serviceName, nil))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	var result string
-	if err := processResponse(resp, &result); err != nil {
-		return "", err
-	}
-	return result, nil
-}
-
-func (client *Client) ServiceVersion() (int64, error) {
-	resp, err := http.Get(client.endpointURL(serviceVersion, nil))
-	if err != nil {
-		return -1, err
-	}
-	defer resp.Body.Close()
-	var result int64
-	if err := processResponse(resp, &result); err != nil {
-		return -1, err
-	}
-	return result, nil
 }
 
 func checkResponse(resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		bytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("%v", resp.Status)
+			return fmt.Errorf("%v (%v):\n%v", resp.Status, resp.StatusCode, err)
 		}
-		return fmt.Errorf("%s", bytes)
+		return fmt.Errorf("%v (%v):\n%s", resp.Status, resp.StatusCode, bytes)
 	}
 	return nil
 }
 
-func processResponse(resp *http.Response, data interface{}) error {
+func processResponse(resp *http.Response, output interface{}) error {
 	defer resp.Body.Close()
-	if data != nil {
+	if output != nil {
 		contentType := resp.Header.Get("Content-Type")
 		switch contentType {
 		case "application/json":
-			if err := json.NewDecoder(resp.Body).Decode(data); err != nil {
-				return fmt.Errorf("Decode() failed with: %v", err)
+			if err := json.NewDecoder(resp.Body).Decode(output); err != nil {
+				return fmt.Errorf("Decode() failed: %v", err)
 			}
 		default:
 			return fmt.Errorf("Unsupported response type: %v", contentType)

@@ -1,73 +1,49 @@
-package client
+package option
 
-import "fmt"
+import (
+	"github.com/Alluxio/alluxio-go/wire"
+)
 
-func AllowExists(allowExists bool) func(map[string]string) {
-	return set("allowExists", allowExists)
+type CreateDirectory struct {
+	AllowExists bool           `json:"allowExists"`
+	Mode        *wire.Mode     `json:"mode"`
+	Recursive   bool           `json:"recursive"`
+	WriteType   wire.WriteType `json:"writeType"`
 }
 
-func BlockSize(blockSize int64) func(map[string]string) {
-	return set("blockSize", blockSize)
+type Delete struct {
+	Recursive bool `json:"recursive"`
 }
 
-func Group(group string) func(map[string]string) {
-	return set("group", group)
+type Exists struct{}
+
+type Free struct {
+	Recursive bool `json:"recursive"`
 }
 
-func LoadMetadataType(loadMetadataType string) func(map[string]string) {
-	return set("loadMetadataType", loadMetadataType)
+type GetStatus struct{}
+
+type ListStatus struct {
+	LoadMetadataType wire.LoadMetadataType `json:"loadMetadataType"`
 }
 
-func LocationPolicy(locationPolicy string) func(map[string]string) {
-	return set("locationPolicy", locationPolicy)
+type Mount struct {
+	Properties map[string]string `json:"properties"`
+	ReadOnly   bool              `json:"readOnly"`
+	Shared     bool              `json:"shared"`
 }
 
-func Mode(mode int16) func(map[string]string) {
-	return set("mode", mode)
+type Rename struct{}
+
+type SetAttribute struct {
+	Group     *string        `json:"group"`
+	Mode      *wire.Mode     `json:"mode"`
+	Owner     *string        `json:"owner"`
+	Persisted *bool          `json:"persisted"`
+	Pinned    *bool          `json:"pinned"`
+	Recursive bool           `json:"recursive"`
+	TTL       *int64         `json:"ttl"`
+	TTLAction wire.TTLAction `json:"ttlAction"`
 }
 
-func Owner(owner string) func(map[string]string) {
-	return set("owner", owner)
-}
-
-func Persisted(persisted bool) func(map[string]string) {
-	return set("persisted", persisted)
-}
-
-func Pinned(pinned bool) func(map[string]string) {
-	return set("pinned", pinned)
-}
-
-func ReadOnly(readOnly bool) func(map[string]string) {
-	return set("readOnly", readOnly)
-}
-
-func ReadType(readType string) func(map[string]string) {
-	return set("readType", readType)
-}
-
-func Recursive(recursive bool) func(map[string]string) {
-	return set("recursive", recursive)
-}
-
-func Shared(shared bool) func(map[string]string) {
-	return set("shared", shared)
-}
-
-func TTL(ttl int64) func(map[string]string) {
-	return set("ttl", ttl)
-}
-
-func TTLAction(ttlAction string) func(map[string]string) {
-	return set("ttlAction", ttlAction)
-}
-
-func WriteType(writeType string) func(map[string]string) {
-	return set("writeType", writeType)
-}
-
-func set(field string, value interface{}) func(map[string]string) {
-	return func(params map[string]string) {
-		params[field] = fmt.Sprintf("%v", value)
-	}
-}
+type Unmount struct{}

@@ -1,10 +1,10 @@
 package client
 
 import (
-	"io"
 	"net/http"
 	"time"
 
+	"github.com/Alluxio/alluxio-go/option"
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
@@ -18,160 +18,67 @@ func NewFileSystem(host string, port int, timeout time.Duration) *FileSystem {
 	return &FileSystem{Client{
 		host:   host,
 		port:   port,
-		prefix: fileSystemServicePrefix,
+		prefix: apiPrefix,
 		http: http.Client{
 			Timeout: timeout,
 		},
 	}}
 }
 
-func (client *FileSystem) CreateDirectory(path string, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(createDirectory, params)
+func (client *FileSystem) CreateDirectory(path string, options option.CreateDirectory) error {
+	return client.post(join(pathsPrefix, path, createDirectory), nil, options, nil)
 }
 
-func (client *FileSystem) Delete(path string, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(delete, params)
+func (client *FileSystem) Delete(path string, options option.Delete) error {
+	return client.post(join(pathsPrefix, path, delete), nil, options, nil)
 }
 
-func (client *FileSystem) Download(path string, options ...func(map[string]string)) (io.ReadCloser, error) {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	resp, err := client.http.Get(client.endpointURL(download, params))
-	if err != nil {
-		return nil, err
-	}
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-	return resp.Body, nil
-}
-
-func (client *FileSystem) Exists(path string, options ...func(map[string]string)) (bool, error) {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
+func (client *FileSystem) Exists(path string, options option.Exists) (bool, error) {
 	var result bool
-	if err := client.get(exists, params, &result); err != nil {
+	if err := client.post(join(pathsPrefix, path, exists), nil, options, &result); err != nil {
 		return false, err
 	}
 	return result, nil
 }
 
-func (client *FileSystem) Free(path string, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(free, params)
+func (client *FileSystem) Free(path string, options option.Free) error {
+	return client.post(join(pathsPrefix, path, free), nil, options, nil)
 }
 
-func (client *FileSystem) GetStatus(path string, options ...func(map[string]string)) (*wire.FileInfo, error) {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
+func (client *FileSystem) GetStatus(path string, options option.GetStatus) (*wire.FileInfo, error) {
 	var result wire.FileInfo
-	if err := client.get(getStatus, params, &result); err != nil {
+	if err := client.post(join(pathsPrefix, path, getStatus), nil, options, &result); err != nil {
 		return nil, err
 	}
 	return &result, nil
 }
 
-func (client *FileSystem) ListStatus(path string, options ...func(map[string]string)) (wire.FileInfos, error) {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
+func (client *FileSystem) ListStatus(path string, options option.ListStatus) (wire.FileInfos, error) {
 	var result wire.FileInfos
-	if err := client.get(listStatus, params, &result); err != nil {
+	if err := client.post(join(pathsPrefix, path, listStatus), nil, options, &result); err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func (client *FileSystem) Mount(path, ufsPath string, options ...func(map[string]string)) error {
+func (client *FileSystem) Mount(path, src string, options option.Mount) error {
 	params := map[string]string{
-		"path":    path,
-		"ufsPath": ufsPath,
+		"src": src,
 	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(mount, params)
+	return client.post(join(pathsPrefix, path, mount), params, options, nil)
 }
 
-func (client *FileSystem) Rename(srcPath, dstPath string, options ...func(map[string]string)) error {
+func (client *FileSystem) Rename(path, dst string, options option.Rename) error {
 	params := map[string]string{
-		"srcPath": srcPath,
-		"dstPath": dstPath,
+		"dst": dst,
 	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(rename, params)
+	return client.post(join(pathsPrefix, path, rename), params, options, nil)
 }
 
-func (client *FileSystem) SetAttribute(path string, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(setAttribute, params)
+func (client *FileSystem) SetAttribute(path string, options option.SetAttribute) error {
+	return client.post(join(pathsPrefix, path, setAttribute), nil, options, nil)
 }
 
-func (client *FileSystem) Unmount(path string, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	return client.post(unmount, params)
-}
-
-func (client *FileSystem) Upload(path string, data io.ReadCloser, options ...func(map[string]string)) error {
-	params := map[string]string{
-		"path": path,
-	}
-	for _, option := range options {
-		option(params)
-	}
-	resp, err := client.http.Post(client.endpointURL(upload, params), "application/octet-stream", data)
-	if err != nil {
-		return err
-	}
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-	if err := processResponse(resp, nil); err != nil {
-		return err
-	}
-	return nil
+func (client *FileSystem) Unmount(path string, options option.Unmount) error {
+	return client.post(join(pathsPrefix, path, unmount), nil, options, nil)
 }

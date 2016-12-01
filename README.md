@@ -1,1 +1,1 @@
-# Go Library for Alluxio File System API
+# Go Library for the Alluxio File System API
