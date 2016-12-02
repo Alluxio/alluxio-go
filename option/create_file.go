@@ -1,6 +1,8 @@
 package option
 
 import (
+	"math/rand"
+
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
@@ -40,4 +42,16 @@ func (option *CreateFile) SetTTLAction(value wire.TTLAction) {
 
 func (option *CreateFile) SetWriteType(value wire.WriteType) {
 	option.WriteType = &value
+}
+
+func RandomCreateFile() CreateFile {
+	var option CreateFile
+	option.SetBlockSize(rand.Int63())
+	option.SetLocationPolicyClass(wire.RandomString())
+	option.SetMode(wire.RandomMode())
+	option.SetRecursive(wire.RandomBool())
+	option.SetTTL(rand.Int63())
+	option.SetTTLAction(wire.RandomTTLAction())
+	option.SetWriteType(wire.RandomWriteType())
+	return option
 }

@@ -5,11 +5,11 @@ import (
 	"io"
 )
 
-func (client *FileSystem) Close(id int) error {
+func (client *Client) Close(id int) error {
 	return client.post(join(streamsPrefix, fmt.Sprintf("%d", id), close), nil, nil, nil)
 }
 
-func (client *FileSystem) Read(id int) (io.Reader, error) {
+func (client *Client) Read(id int) (io.Reader, error) {
 	suffix := join(streamsPrefix, fmt.Sprintf("%d", id), read)
 	resp, err := client.http.Post(client.endpointURL(suffix, nil), "application/json", nil)
 	if err != nil {
@@ -21,7 +21,7 @@ func (client *FileSystem) Read(id int) (io.Reader, error) {
 	return resp.Body, nil
 }
 
-func (client *FileSystem) Write(id int, input io.Reader) (int, error) {
+func (client *Client) Write(id int, input io.Reader) (int, error) {
 	suffix := join(streamsPrefix, fmt.Sprintf("%d", id), write)
 	resp, err := client.http.Post(client.endpointURL(suffix, nil), "application/octet-stream", input)
 	if err != nil {

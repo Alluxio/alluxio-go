@@ -1,5 +1,11 @@
 package option
 
+import (
+	"math/rand"
+
+	"github.com/Alluxio/alluxio-go/wire"
+)
+
 type Mount struct {
 	Properties map[string]string `json:"properties,omitempty"`
 	ReadOnly   *bool             `json:"readOnly,omitempty"`
@@ -16,4 +22,16 @@ func (option *Mount) SetReadOnly(value bool) {
 
 func (option *Mount) SetShared(value bool) {
 	option.Shared = &value
+}
+
+func RandomMount() Mount {
+	var option Mount
+	properties, n := map[string]string{}, rand.Intn(10)+1
+	for i := 0; i < n; i++ {
+		properties[wire.RandomString()] = wire.RandomString()
+	}
+	option.SetProperties(properties)
+	option.SetReadOnly(wire.RandomBool())
+	option.SetShared(wire.RandomBool())
+	return option
 }

@@ -47,6 +47,22 @@ type Client struct {
 	http   http.Client
 }
 
+// NewClient is the file system client factory.
+func NewClient(host string, port int, timeout time.Duration) *Client {
+	return &Client{
+		host:   host,
+		port:   port,
+		prefix: apiPrefix,
+		http: http.Client{
+			Timeout: timeout,
+		},
+	}
+}
+
+func join(components ...string) string {
+	return strings.Join(components, "/")
+}
+
 func (client *Client) endpointURL(endpoint string, params map[string]string) string {
 	paramsStr := []string{}
 	for key, value := range params {
@@ -55,11 +71,7 @@ func (client *Client) endpointURL(endpoint string, params map[string]string) str
 	return fmt.Sprintf("http://%v:%v/%v/%v?%v", client.host, client.port, client.prefix, endpoint, strings.Join(paramsStr, "&"))
 }
 
-func join(components ...string) string {
-	return strings.Join(components, "/")
-}
-
-func (client *FileSystem) post(method string, params map[string]string, input interface{}, output interface{}) error {
+func (client *Client) post(method string, params map[string]string, input interface{}, output interface{}) error {
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(input); err != nil {
 		return fmt.Errorf("Encode() failed: %v", err)

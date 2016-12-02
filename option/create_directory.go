@@ -26,3 +26,12 @@ func (option *CreateDirectory) SetRecursive(value bool) {
 func (option *CreateDirectory) SetWriteType(value wire.WriteType) {
 	option.WriteType = &value
 }
+
+func RandomCreateDirectory() CreateDirectory {
+	var option CreateDirectory
+	option.SetAllowExists(wire.RandomBool())
+	option.SetMode(wire.RandomMode())
+	option.SetRecursive(wire.RandomBool())
+	option.SetWriteType(wire.RandomWriteType())
+	return option
+}
