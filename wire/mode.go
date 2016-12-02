@@ -5,3 +5,11 @@ type Mode struct {
 	GroupBits Bits `json:"groupBits"`
 	OtherBits Bits `json:"otherBits"`
 }
+
+func RandomMode() Mode {
+	return Mode{
+		OwnerBits: RandomBits(),
+		GroupBits: RandomBits(),
+		OtherBits: RandomBits(),
+	}
+}

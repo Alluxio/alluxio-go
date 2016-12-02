@@ -6,10 +6,7 @@ import (
 
 // RandomBool generates a random bool.
 func RandomBool() bool {
-	if rand.Int()%2 == 0 {
-		return true
-	}
-	return false
+	return rand.Int()%2 == 0
 }
 
 // RandomBytes generates a random byte slice.

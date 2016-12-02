@@ -29,6 +29,7 @@ const (
 	getStatus       = "get-status"
 	listStatus      = "list-status"
 	mount           = "mount"
+	openFile        = "open-file"
 	rename          = "rename"
 	setAttribute    = "set-attribute"
 	unmount         = "unmount"
@@ -67,16 +68,16 @@ func (client *FileSystem) post(method string, params map[string]string, input in
 	if err != nil {
 		return err
 	}
-	if err := checkResponse(resp); err != nil {
+	if err := check(resp); err != nil {
 		return err
 	}
-	if err := processResponse(resp, output); err != nil {
+	if err := process(resp, output); err != nil {
 		return err
 	}
 	return nil
 }
 
-func checkResponse(resp *http.Response) error {
+func check(resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		bytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -87,7 +88,7 @@ func checkResponse(resp *http.Response) error {
 	return nil
 }
 
-func processResponse(resp *http.Response, output interface{}) error {
+func process(resp *http.Response, output interface{}) error {
 	defer resp.Body.Close()
 	if output != nil {
 		contentType := resp.Header.Get("Content-Type")

@@ -1,5 +1,3 @@
-//+build ignore
-
 package main
 
 import (
@@ -38,14 +36,52 @@ func main() {
 }
 
 func deleteIfExists(fs *alluxio.FileSystem, path string) {
-	if ok, err := fs.Exists(path); err != nil {
+	if ok, err := fs.Exists(path, nil); err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(-1)
 	} else if ok {
-		if err := fs.Delete(path); err != nil {
+		if err := fs.Delete(path, nil); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err)
 			os.Exit(-1)
 		}
+	}
+}
+
+func readFile(fs *alluxio.FileSystem, path string) {
+	id, err := fs.OpenFile(path, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+	reader, err := fs.Read(id)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+	if _, err := io.Copy(ioutil.Discard, reader); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+	if err := fs.Close(id); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+}
+
+func writeFile(fs *alluxio.FileSystem, path string) {
+	id, err := fs.CreateFile(path, nil)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+	buffer := make([]byte, GB)
+	if _, err := fs.Write(id, nopCloser{bytes.NewBuffer(buffer)}); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
+	}
+	if err := fs.Close(id); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(-1)
 	}
 }
 
@@ -53,7 +89,7 @@ func metadataBenchmark() {
 	fs := alluxio.NewFileSystem("localhost", 39999, time.Minute)
 	start := time.Now()
 	for i := 0; i < numOps; i++ {
-		if _, err := fs.Exists("/data"); err != nil {
+		if _, err := fs.Exists("/data", nil); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err)
 			os.Exit(-1)
 		}
@@ -65,22 +101,10 @@ func metadataBenchmark() {
 func readBenchmark() {
 	fs := alluxio.NewFileSystem("localhost", 39999, time.Minute)
 	deleteIfExists(fs, "/data")
+	writeFile(fs, "/data")
 	start := time.Now()
-	buffer := make([]byte, GB)
-	if err := fs.Upload("/data", nopCloser{bytes.NewBuffer(buffer)}); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
-		os.Exit(-1)
-	}
 	for i := 0; i < numOps; i++ {
-		if reader, err := fs.Download("/data"); err != nil {
-			fmt.Fprintf(os.Stderr, "%v", err)
-			os.Exit(-1)
-		} else {
-			if _, err := io.Copy(ioutil.Discard, reader); err != nil {
-				fmt.Fprintf(os.Stderr, "%v", err)
-				os.Exit(-1)
-			}
-		}
+		readFile(fs, "/data")
 	}
 	end := time.Now()
 	fmt.Printf("Read %vGBs in %v seconds\n", numOps, end.Sub(start).Seconds())
@@ -88,16 +112,12 @@ func readBenchmark() {
 
 func writeBenchmark() {
 	fs := alluxio.NewFileSystem("localhost", 39999, time.Minute)
-	buffer := make([]byte, GB)
 	for i := 0; i < numOps; i++ {
 		deleteIfExists(fs, fmt.Sprintf("/data-%d", i+1))
 	}
 	start := time.Now()
 	for i := 0; i < numOps; i++ {
-		if err := fs.Upload(fmt.Sprintf("/data-%d", i+1), nopCloser{bytes.NewBuffer(buffer)}); err != nil {
-			fmt.Fprintf(os.Stderr, "%v", err)
-			os.Exit(-1)
-		}
+		writeFile(fs, fmt.Sprintf("/data-%d", i+1))
 	}
 	end := time.Now()
 	fmt.Printf("Wrote %vGBs in %v seconds\n", numOps, end.Sub(start).Seconds())
