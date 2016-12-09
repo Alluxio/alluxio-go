@@ -1,11 +1,8 @@
 package wire
 
-import (
-	"math/rand"
-	"sort"
-)
+import "sort"
 
-// FileInfo represents a file information.
+// FileInfo represents a file's information.
 type FileInfo struct {
 	BlockIds               []int64
 	Cacheable              bool
@@ -47,41 +44,4 @@ func (fis FileInfos) Swap(i, j int) {
 
 func (fis FileInfos) Less(i, j int) bool {
 	return fis[i].Name < fis[j].Name
-}
-
-// RandomFileInfo generates a random file information for testing.
-func RandomFileInfo() FileInfo {
-	blockIDs := make([]int64, rand.Intn(10))
-	for i := 0; i < len(blockIDs); i++ {
-		blockIDs[i] = rand.Int63()
-	}
-	fileBlockInfos := make([]FileBlockInfo, rand.Intn(10))
-	for i := 0; i < len(fileBlockInfos); i++ {
-		fileBlockInfos[i] = RandomFileBlockInfo()
-	}
-	return FileInfo{
-		BlockIds:               blockIDs,
-		BlockSizeBytes:         rand.Int63(),
-		Cacheable:              RandomBool(),
-		Completed:              RandomBool(),
-		CreationTimeMs:         rand.Int63(),
-		FileBlockInfos:         fileBlockInfos,
-		FileID:                 rand.Int63(),
-		Folder:                 RandomBool(),
-		Group:                  RandomString(),
-		InMemoryPercentage:     rand.Int31(),
-		LastModificationTimeMs: rand.Int63(),
-		Length:                 rand.Int63(),
-		Mode:                   rand.Int31(),
-		MountPoint:             RandomBool(),
-		Name:                   RandomString(),
-		Owner:                  RandomString(),
-		Path:                   RandomString(),
-		Persisted:              RandomBool(),
-		PersistenceState:       RandomString(),
-		Pinned:                 RandomBool(),
-		TTL:                    rand.Int63(),
-		TTLAction:              RandomString(),
-		UfsPath:                RandomString(),
-	}
 }

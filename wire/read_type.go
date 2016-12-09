@@ -1,7 +1,6 @@
 package wire
 
-import "math/rand"
-
+// ReadType represents a read type.
 type ReadType string
 
 const (
@@ -9,16 +8,3 @@ const (
 	ReadTypeCache                 = "CACHE"
 	ReadTypeCachePromote          = "CACHE_PROMOTE"
 )
-
-func RandomReadType() ReadType {
-	var result ReadType
-	switch rand.Intn(3) {
-	case 0:
-		result = ReadTypeNoCache
-	case 1:
-		result = ReadTypeCache
-	case 2:
-		result = ReadTypeCachePromote
-	}
-	return result
-}

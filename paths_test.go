@@ -1,7 +1,10 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"net"
 	"net/http"
@@ -13,13 +16,19 @@ import (
 	"time"
 
 	"github.com/Alluxio/alluxio-go/option"
+	"github.com/Alluxio/alluxio-go/optiontest"
 	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	seed := time.Now().UnixNano()
+	log.Printf("Using seed: %v", seed)
+	rand.Seed(seed)
 }
 
+// setupClient sets up a instance of the Alluxio file system client connected
+// to a local test server that uses the given handler.
 func setupClient(t *testing.T, handler http.Handler) (*Client, func()) {
 	testServer := httptest.NewServer(handler)
 	url, err := url.Parse(testServer.URL)
@@ -39,16 +48,24 @@ func setupClient(t *testing.T, handler http.Handler) (*Client, func()) {
 	}
 }
 
-func jsonHandler(t *testing.T, path, method string, input, output, expected interface{}) http.HandlerFunc {
+// jsonHandler creates a handler for the given resource that:
+// 1. JSON-decodes the input from the request body
+// 2. checks that the received input matches the expected input
+// 3. JSON-encodes the given output to the response body
+func jsonHandler(t *testing.T, resource string, input, output, expected interface{}) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got, want := r.URL.Path, join("", apiPrefix, pathsPrefix, path, method); got != want {
+		defer r.Body.Close()
+		if got, want := r.URL.Path, join("", apiPrefix, pathsPrefix, resource); got != want {
 			t.Fatalf("Unexpected path: got %v, want %v", got, want)
 		}
-		decoder := json.NewDecoder(r.Body)
-		if err := decoder.Decode(&input); err != nil {
-			t.Fatalf("Decode() failed: %v", err)
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			t.Fatalf("ReadAll() failed: %v", err)
 		}
-		defer r.Body.Close()
+		decoder := json.NewDecoder(bytes.NewBuffer(body))
+		if err := decoder.Decode(&input); err != nil {
+			t.Fatalf("Decode() failed: %v\nBody:\n%s", err, body)
+		}
 		if !reflect.DeepEqual(input, expected) {
 			t.Fatalf("Unexpected input: got %v, want %v", input, expected)
 		}
@@ -60,9 +77,9 @@ func jsonHandler(t *testing.T, path, method string, input, output, expected inte
 }
 
 func TestFileSystemCreateDirectory(t *testing.T) {
-	input, expected := option.CreateDirectory{}, option.RandomCreateDirectory()
+	input, expected := option.CreateDirectory{}, optiontest.RandomCreateDirectory()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, createDirectory, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, createDirectory), &input, nil, &expected))
 	defer cleanup()
 	if err := fs.CreateDirectory(path, &expected); err != nil {
 		t.Fatalf("CreateDirectory() failed: %v", err)
@@ -70,10 +87,10 @@ func TestFileSystemCreateDirectory(t *testing.T) {
 }
 
 func TestFileSystemCreateFile(t *testing.T) {
-	input, expected := option.CreateFile{}, option.RandomCreateFile()
+	input, expected := option.CreateFile{}, optiontest.RandomCreateFile()
 	output := rand.Int()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, createFile, &input, output, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, createFile), &input, output, &expected))
 	defer cleanup()
 	if id, err := fs.CreateFile(path, &expected); err != nil {
 		t.Fatalf("CreateFile() failed: %v", err)
@@ -83,9 +100,9 @@ func TestFileSystemCreateFile(t *testing.T) {
 }
 
 func TestFileSystemDelete(t *testing.T) {
-	input, expected := option.Delete{}, option.RandomDelete()
+	input, expected := option.Delete{}, optiontest.RandomDelete()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, delete, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, delete), &input, nil, &expected))
 	defer cleanup()
 	if err := fs.Delete(path, &expected); err != nil {
 		t.Fatalf("Delete() failed: %v", err)
@@ -93,10 +110,10 @@ func TestFileSystemDelete(t *testing.T) {
 }
 
 func TestFileSystemExists(t *testing.T) {
-	input, expected := option.Exists{}, option.RandomExists()
+	input, expected := option.Exists{}, optiontest.RandomExists()
 	path := "/foo"
-	output := wire.RandomBool()
-	fs, cleanup := setupClient(t, jsonHandler(t, path, exists, &input, output, &expected))
+	output := wiretest.RandomBool()
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, exists), &input, output, &expected))
 	defer cleanup()
 	if ok, err := fs.Exists(path, &expected); err != nil {
 		t.Fatalf("Exists() failed: %v", err)
@@ -106,9 +123,9 @@ func TestFileSystemExists(t *testing.T) {
 }
 
 func TestFileSystemFree(t *testing.T) {
-	input, expected := option.Free{}, option.RandomFree()
+	input, expected := option.Free{}, optiontest.RandomFree()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, free, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, free), &input, nil, &expected))
 	defer cleanup()
 	if err := fs.Free(path, &expected); err != nil {
 		t.Fatalf("Free() failed: %v", err)
@@ -116,10 +133,10 @@ func TestFileSystemFree(t *testing.T) {
 }
 
 func TestFileSystemGetStatus(t *testing.T) {
-	input, expected := option.GetStatus{}, option.RandomGetStatus()
-	output := wire.RandomFileInfo()
+	input, expected := option.GetStatus{}, optiontest.RandomGetStatus()
+	output := wiretest.RandomFileInfo()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, getStatus, &input, output, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, getStatus), &input, output, &expected))
 	defer cleanup()
 	if fileInfo, err := fs.GetStatus(path, &expected); err != nil {
 		t.Fatalf("GetStatus() failed: %v", err)
@@ -129,13 +146,13 @@ func TestFileSystemGetStatus(t *testing.T) {
 }
 
 func TestFileSystemListStatus(t *testing.T) {
-	input, expected := option.ListStatus{}, option.RandomListStatus()
+	input, expected := option.ListStatus{}, optiontest.RandomListStatus()
 	output := wire.FileInfos(make([]wire.FileInfo, rand.Intn(10)))
 	path := "/foo"
 	for i := 0; i < len(output); i++ {
-		output[i] = wire.RandomFileInfo()
+		output[i] = wiretest.RandomFileInfo()
 	}
-	fs, cleanup := setupClient(t, jsonHandler(t, path, listStatus, &input, output, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, listStatus), &input, output, &expected))
 	defer cleanup()
 	if fileInfos, err := fs.ListStatus(path, &expected); err != nil {
 		t.Fatalf("ListStatus() failed: %v", err)
@@ -145,20 +162,20 @@ func TestFileSystemListStatus(t *testing.T) {
 }
 
 func TestFileSystemMount(t *testing.T) {
-	input, expected := option.Mount{}, option.RandomMount()
+	input, expected := option.Mount{}, optiontest.RandomMount()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, mount, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, mount), &input, nil, &expected))
 	defer cleanup()
-	if err := fs.Mount(path, wire.RandomString(), &expected); err != nil {
+	if err := fs.Mount(path, wiretest.RandomString(), &expected); err != nil {
 		t.Fatalf("Mount() failed: %v", err)
 	}
 }
 
 func TestFileSystemOpenFile(t *testing.T) {
-	input, expected := option.OpenFile{}, option.RandomOpenFile()
+	input, expected := option.OpenFile{}, optiontest.RandomOpenFile()
 	output := rand.Int()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, openFile, &input, output, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, openFile), &input, output, &expected))
 	defer cleanup()
 	if id, err := fs.OpenFile(path, &expected); err != nil {
 		t.Fatalf("OpenFile() failed: %v", err)
@@ -168,19 +185,19 @@ func TestFileSystemOpenFile(t *testing.T) {
 }
 
 func TestFileSystemRename(t *testing.T) {
-	input, expected := option.Rename{}, option.RandomRename()
+	input, expected := option.Rename{}, optiontest.RandomRename()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, rename, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, rename), &input, nil, &expected))
 	defer cleanup()
-	if err := fs.Rename(path, wire.RandomString(), &expected); err != nil {
+	if err := fs.Rename(path, wiretest.RandomString(), &expected); err != nil {
 		t.Fatalf("Rename() failed: %v", err)
 	}
 }
 
 func TestFileSystemSetAttribute(t *testing.T) {
-	input, expected := option.SetAttribute{}, option.RandomSetAttribute()
+	input, expected := option.SetAttribute{}, optiontest.RandomSetAttribute()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, setAttribute, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, setAttribute), &input, nil, &expected))
 	defer cleanup()
 	if err := fs.SetAttribute(path, &expected); err != nil {
 		t.Fatalf("SetAttribute() failed: %v", err)
@@ -188,9 +205,9 @@ func TestFileSystemSetAttribute(t *testing.T) {
 }
 
 func TestFileSystemUnmount(t *testing.T) {
-	input, expected := option.Unmount{}, option.RandomUnmount()
+	input, expected := option.Unmount{}, optiontest.RandomUnmount()
 	path := "/foo"
-	fs, cleanup := setupClient(t, jsonHandler(t, path, unmount, &input, nil, &expected))
+	fs, cleanup := setupClient(t, jsonHandler(t, join(path, unmount), &input, nil, &expected))
 	defer cleanup()
 	if err := fs.Unmount(path, &expected); err != nil {
 		t.Fatalf("Unmount() failed: %v", err)

@@ -1,10 +1,6 @@
 package option
 
-import (
-	"math/rand"
-
-	"github.com/Alluxio/alluxio-go/wire"
-)
+import "github.com/Alluxio/alluxio-go/wire"
 
 type SetAttribute struct {
 	Group     *string         `json:"group,omitempty"`
@@ -47,17 +43,4 @@ func (option *SetAttribute) SetTTL(value int64) {
 
 func (option *SetAttribute) SetTTLAction(value wire.TTLAction) {
 	option.TTLAction = &value
-}
-
-func RandomSetAttribute() SetAttribute {
-	var option SetAttribute
-	option.SetGroup(wire.RandomString())
-	option.SetMode(wire.RandomMode())
-	option.SetOwner(wire.RandomString())
-	option.SetPersisted(wire.RandomBool())
-	option.SetPinned(wire.RandomBool())
-	option.SetRecursive(wire.RandomBool())
-	option.SetTTL(rand.Int63())
-	option.SetTTLAction(wire.RandomTTLAction())
-	return option
 }

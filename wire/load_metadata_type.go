@@ -1,7 +1,6 @@
 package wire
 
-import "math/rand"
-
+// LoadMetadataType represents the load metadata type.
 type LoadMetadataType string
 
 const (
@@ -9,16 +8,3 @@ const (
 	LoadMetadataTypeOnce                    = "Once"
 	LoadMetadataTypeAlways                  = "Always"
 )
-
-func RandomLoadMetadataType() LoadMetadataType {
-	var result LoadMetadataType
-	switch rand.Intn(3) {
-	case 0:
-		result = LoadMetadataTypeNever
-	case 1:
-		result = LoadMetadataTypeOnce
-	case 2:
-		result = LoadMetadataTypeAlways
-	}
-	return result
-}

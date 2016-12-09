@@ -1,4 +1,4 @@
-package wire
+package wiretest
 
 import (
 	"math/rand"

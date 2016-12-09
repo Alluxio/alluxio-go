@@ -47,7 +47,7 @@ type Client struct {
 	http   http.Client
 }
 
-// NewClient is the file system client factory.
+// NewClient is the Alluxio file system client factory.
 func NewClient(host string, port int, timeout time.Duration) *Client {
 	return &Client{
 		host:   host,
@@ -63,20 +63,20 @@ func join(components ...string) string {
 	return strings.Join(components, "/")
 }
 
-func (client *Client) endpointURL(endpoint string, params map[string]string) string {
-	paramsStr := []string{}
+func (client *Client) endpointURL(resource string, params map[string]string) string {
+	paramPairs := []string{}
 	for key, value := range params {
-		paramsStr = append(paramsStr, key+"="+url.QueryEscape(value))
+		paramPairs = append(paramPairs, key+"="+url.QueryEscape(value))
 	}
-	return fmt.Sprintf("http://%v:%v/%v/%v?%v", client.host, client.port, client.prefix, endpoint, strings.Join(paramsStr, "&"))
+	return fmt.Sprintf("http://%v:%v/%v/%v?%v", client.host, client.port, client.prefix, resource, strings.Join(paramPairs, "&"))
 }
 
-func (client *Client) post(method string, params map[string]string, input interface{}, output interface{}) error {
+func (client *Client) post(resource string, params map[string]string, input interface{}, output interface{}) error {
 	var b bytes.Buffer
 	if err := json.NewEncoder(&b).Encode(input); err != nil {
 		return fmt.Errorf("Encode() failed: %v", err)
 	}
-	resp, err := client.http.Post(client.endpointURL(method, params), "application/json", &b)
+	resp, err := client.http.Post(client.endpointURL(resource, params), "application/json", &b)
 	if err != nil {
 		return err
 	}
@@ -93,9 +93,9 @@ func check(resp *http.Response) error {
 	if resp.StatusCode != http.StatusOK {
 		bytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("%v (%v):\n%v", resp.Status, resp.StatusCode, err)
+			return fmt.Errorf("Response status: %v (%v):\nFailed to ready response body: %v", resp.Status, resp.StatusCode, err)
 		}
-		return fmt.Errorf("%v (%v):\n%s", resp.Status, resp.StatusCode, bytes)
+		return fmt.Errorf("Response status: %v (%v):\nResponse body:\n%s", resp.Status, resp.StatusCode, bytes)
 	}
 	return nil
 }

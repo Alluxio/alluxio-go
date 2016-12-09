@@ -11,9 +11,3 @@ type ListStatus struct {
 func (option *ListStatus) SetLoadMetadataType(value wire.LoadMetadataType) {
 	option.LoadMetadataType = &value
 }
-
-func RandomListStatus() ListStatus {
-	var option ListStatus
-	option.SetLoadMetadataType(wire.RandomLoadMetadataType())
-	return option
-}
