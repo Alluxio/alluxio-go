@@ -7,6 +7,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
+// RandomSetAttribute creates a random instance of option.SetAttribute.
 func RandomSetAttribute() option.SetAttribute {
 	var option option.SetAttribute
 	option.SetGroup(wiretest.RandomString())

@@ -4,6 +4,8 @@ package wire
 type TTLAction string
 
 const (
+	// TTLActionDelete represents the action of deleting a path.
 	TTLActionDelete TTLAction = "DELETE"
-	TTLActionFree             = "FREE"
+	// TTLActionFree represents the action of freeing a path.
+	TTLActionFree = "FREE"
 )

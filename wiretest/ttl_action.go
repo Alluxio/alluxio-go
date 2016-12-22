@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomTTLAction generates a random TTLAction.
+// RandomTTLAction generates a random instance of wire.TTLAction.
 func RandomTTLAction() wire.TTLAction {
 	var result wire.TTLAction
 	switch rand.Intn(2) {

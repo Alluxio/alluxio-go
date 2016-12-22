@@ -7,6 +7,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
+// RandomMount creates a random instance of option.Mount.
 func RandomMount() option.Mount {
 	var option option.Mount
 	properties, n := map[string]string{}, rand.Intn(10)+1

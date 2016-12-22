@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomWriteType generates a random WriteType.
+// RandomWriteType generates a random instance of wire.WriteType.
 func RandomWriteType() wire.WriteType {
 	var result wire.WriteType
 	switch rand.Intn(5) {

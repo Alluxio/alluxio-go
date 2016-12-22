@@ -4,7 +4,10 @@ package wire
 type ReadType string
 
 const (
-	ReadTypeNoCache      ReadType = "NO_CACHE"
-	ReadTypeCache                 = "CACHE"
-	ReadTypeCachePromote          = "CACHE_PROMOTE"
+	// ReadTypeNoCache means data will be not cached.
+	ReadTypeNoCache ReadType = "NO_CACHE"
+	// ReadTypeCache means data will be cached.
+	ReadTypeCache = "CACHE"
+	// ReadTypeCachePromote mans data will be cached in the top tier.
+	ReadTypeCachePromote = "CACHE_PROMOTE"
 )
