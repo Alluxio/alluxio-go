@@ -8,12 +8,11 @@ import (
 	"log"
 	"time"
 
-	alluxio "github.com/Alluxio/alluxio-go"
 	"github.com/Alluxio/alluxio-go/option"
 )
 
 func ExampleClient_download() {
-	fs := alluxio.NewClient("localhost", 39999, time.Minute)
+	fs := NewClient("localhost", 39999, time.Minute)
 	id, err := fs.OpenFile("/test_file", &option.OpenFile{})
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +29,7 @@ func ExampleClient_download() {
 }
 
 func ExampleClient_exists() {
-	fs := alluxio.NewClient("localhost", 39999, time.Minute)
+	fs := NewClient("localhost", 39999, time.Minute)
 	ok, err := fs.Exists("/test_path", &option.Exists{})
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +38,7 @@ func ExampleClient_exists() {
 }
 
 func ExampleClient_listStatus() {
-	fs := alluxio.NewClient("localhost", 39999, time.Minute)
+	fs := NewClient("localhost", 39999, time.Minute)
 	fileInfos, err := fs.ListStatus("/test_path", &option.ListStatus{})
 	if err != nil {
 		log.Fatal(err)
@@ -50,7 +49,7 @@ func ExampleClient_listStatus() {
 }
 
 func ExampleClient_upload() {
-	fs := alluxio.NewClient("localhost", 39999, time.Minute)
+	fs := NewClient("localhost", 39999, time.Minute)
 	id, err := fs.CreateFile("/test_file", &option.CreateFile{})
 	if err != nil {
 		log.Fatal(err)
