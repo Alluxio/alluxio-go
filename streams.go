@@ -9,7 +9,7 @@ func (client *Client) Close(id int) error {
 	return client.post(join(streamsPrefix, fmt.Sprintf("%d", id), close), nil, nil, nil)
 }
 
-func (client *Client) Read(id int) (io.Reader, error) {
+func (client *Client) Read(id int) (io.ReadCloser, error) {
 	suffix := join(streamsPrefix, fmt.Sprintf("%d", id), read)
 	resp, err := client.http.Post(client.endpointURL(suffix, nil), "application/json", nil)
 	if err != nil {
