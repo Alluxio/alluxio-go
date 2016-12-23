@@ -22,6 +22,7 @@ func ExampleClient_download() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer r.Close()
 	defer fs.Close(id)
 	if _, err := io.Copy(ioutil.Discard, r); err != nil {
 		log.Fatal(err)
