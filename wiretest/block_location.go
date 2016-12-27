@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomBlockLocation generates a random BlockLocation.
+// RandomBlockLocation generates a random instance of wire.BlockLocation.
 func RandomBlockLocation() wire.BlockLocation {
 	return wire.BlockLocation{
 		WorkerID:      rand.Int63(),

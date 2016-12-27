@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomReadType generates a random ReadType.
+// RandomReadType generates a random instance of wire.ReadType.
 func RandomReadType() wire.ReadType {
 	var result wire.ReadType
 	switch rand.Intn(3) {

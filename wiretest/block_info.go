@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomBlockInfo generates a random BlockInfo.
+// RandomBlockInfo generates a random instance of wire.BlockInfo.
 func RandomBlockInfo() wire.BlockInfo {
 	locations := make([]wire.BlockLocation, rand.Intn(10))
 	for i := 0; i < len(locations); i++ {

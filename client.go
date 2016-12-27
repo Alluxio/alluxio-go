@@ -1,4 +1,4 @@
-package client
+package alluxio
 
 import (
 	"bytes"
@@ -9,10 +9,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-)
-
-const (
-	DefaultTimeout = 5 * time.Minute
 )
 
 const (

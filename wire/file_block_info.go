@@ -2,7 +2,10 @@ package wire
 
 // FileBlockInfo represents a file block's information.
 type FileBlockInfo struct {
-	BlockInfo    BlockInfo
-	Offset       int64
+	// BlockInfo is the block information
+	BlockInfo BlockInfo
+	// Offset is the file offset.
+	Offset int64
+	// UfsLocations holds the UFS locations.
 	UfsLocations []string
 }

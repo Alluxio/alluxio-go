@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomFileBlockInfo generates a random FileBlockInfo.
+// RandomFileBlockInfo generates a random instance of wire.FileBlockInfo.
 func RandomFileBlockInfo() wire.FileBlockInfo {
 	ufsLocations := make([]string, rand.Intn(10))
 	for i := 0; i < len(ufsLocations); i++ {

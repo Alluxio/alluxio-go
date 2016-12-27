@@ -4,7 +4,10 @@ package wire
 type LoadMetadataType string
 
 const (
-	LoadMetadataTypeNever  LoadMetadataType = "Never"
-	LoadMetadataTypeOnce                    = "Once"
-	LoadMetadataTypeAlways                  = "Always"
+	// LoadMetadataTypeNever means metadata should never be loaded.
+	LoadMetadataTypeNever LoadMetadataType = "Never"
+	// LoadMetadataTypeOnce means metadata should be loaded once.
+	LoadMetadataTypeOnce = "Once"
+	// LoadMetadataTypeAlways means metadata should always be loaded.
+	LoadMetadataTypeAlways = "Always"
 )

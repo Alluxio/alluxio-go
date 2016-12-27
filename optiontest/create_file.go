@@ -7,6 +7,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
+// RandomCreateFile creates a random instance of option.CreateFile.
 func RandomCreateFile() option.CreateFile {
 	var option option.CreateFile
 	option.SetBlockSizeBytes(rand.Int63())

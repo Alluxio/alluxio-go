@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomBits generates a random Bits.
+// RandomBits generates a random instace of wire.Bits.
 func RandomBits() wire.Bits {
 	var result wire.Bits
 	switch rand.Intn(8) {

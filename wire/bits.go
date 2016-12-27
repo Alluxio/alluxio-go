@@ -1,15 +1,23 @@
 package wire
 
-// Bits represents file mode's bits.
+// Bits represents access mode's bits.
 type Bits string
 
 const (
-	BitsNone         Bits = "---"
-	BitsExecute           = "--x"
-	BitsWrite             = "-w-"
-	BitsWriteExecute      = "-wx"
-	BitsRead              = "r--"
-	BitsReadExecute       = "r-x"
-	BitsReadWrite         = "rw-"
-	BitsAll               = "rwx"
+	// BitsNone represents no access.
+	BitsNone Bits = "---"
+	// BitsExecute represent execute access.
+	BitsExecute = "--x"
+	// BitsWrite represents write access.
+	BitsWrite = "-w-"
+	// BitsWriteExecute represents write and execute access.
+	BitsWriteExecute = "-wx"
+	// BitsRead represents read access.
+	BitsRead = "r--"
+	// BitsReadExecute represents read and execute access.
+	BitsReadExecute = "r-x"
+	// BitsReadWrite represents read and write access.
+	BitsReadWrite = "rw-"
+	// BitsAll represents read, write, and execute access
+	BitsAll = "rwx"
 )

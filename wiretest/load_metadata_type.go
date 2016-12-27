@@ -6,7 +6,7 @@ import (
 	"github.com/Alluxio/alluxio-go/wire"
 )
 
-// RandomLoadMetadataType generates a random LoadMetadataType.
+// RandomLoadMetadataType generates a random instance of wire.LoadMetadataType.
 func RandomLoadMetadataType() wire.LoadMetadataType {
 	var result wire.LoadMetadataType
 	switch rand.Intn(3) {
