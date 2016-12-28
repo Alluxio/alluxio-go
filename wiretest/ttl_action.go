@@ -3,7 +3,7 @@ package wiretest
 import (
 	"math/rand"
 
-	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/TachyonNexus/alluxio-go/wire"
 )
 
 // RandomTTLAction generates a random instance of wire.TTLAction.
