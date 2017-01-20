@@ -11,13 +11,13 @@ const (
 	// BitsWrite represents write access.
 	BitsWrite = "WRITE"
 	// BitsWriteExecute represents write and execute access.
-	BitsWriteExecute = "WRITEEXECUTE"
+	BitsWriteExecute = "WRITE_EXECUTE"
 	// BitsRead represents read access.
 	BitsRead = "READ"
 	// BitsReadExecute represents read and execute access.
-	BitsReadExecute = "READEXECUTE"
+	BitsReadExecute = "READ_EXECUTE"
 	// BitsReadWrite represents read and write access.
-	BitsReadWrite = "READWRITE"
+	BitsReadWrite = "READ_WRITE"
 	// BitsAll represents read, write, and execute access
 	BitsAll = "ALL"
 )
