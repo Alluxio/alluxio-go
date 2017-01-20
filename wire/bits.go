@@ -5,19 +5,19 @@ type Bits string
 
 const (
 	// BitsNone represents no access.
-	BitsNone Bits = "---"
+	BitsNone Bits = "NONE"
 	// BitsExecute represent execute access.
-	BitsExecute = "--x"
+	BitsExecute = "EXECUTE"
 	// BitsWrite represents write access.
-	BitsWrite = "-w-"
+	BitsWrite = "WRITE"
 	// BitsWriteExecute represents write and execute access.
-	BitsWriteExecute = "-wx"
+	BitsWriteExecute = "WRITEEXECUTE"
 	// BitsRead represents read access.
-	BitsRead = "r--"
+	BitsRead = "READ"
 	// BitsReadExecute represents read and execute access.
-	BitsReadExecute = "r-x"
+	BitsReadExecute = "READEXECUTE"
 	// BitsReadWrite represents read and write access.
-	BitsReadWrite = "rw-"
+	BitsReadWrite = "READWRITE"
 	// BitsAll represents read, write, and execute access
-	BitsAll = "rwx"
+	BitsAll = "ALL"
 )
