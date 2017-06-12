@@ -1,7 +1,7 @@
 package option
 
 import (
-	"github.com/TachyonNexus/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wire"
 )
 
 // CreateDirectory holds the options for creating a directory.

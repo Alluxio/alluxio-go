@@ -1,7 +1,7 @@
 package option
 
 import (
-	"github.com/TachyonNexus/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wire"
 )
 
 // ListStatus holds the options for listing a path.

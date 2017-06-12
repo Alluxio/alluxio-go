@@ -1,8 +1,8 @@
 package optiontest
 
 import (
-	"github.com/TachyonNexus/alluxio-go/option"
-	"github.com/TachyonNexus/alluxio-go/wiretest"
+	"github.com/Alluxio/alluxio-go/option"
+	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
 // RandomOpenFile creates a random instance of option.OpenFile.

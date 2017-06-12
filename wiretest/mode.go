@@ -1,6 +1,6 @@
 package wiretest
 
-import "github.com/TachyonNexus/alluxio-go/wire"
+import "github.com/Alluxio/alluxio-go/wire"
 
 // RandomMode generates a random instance of wire.Mode.
 func RandomMode() wire.Mode {

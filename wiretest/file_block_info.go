@@ -3,7 +3,7 @@ package wiretest
 import (
 	"math/rand"
 
-	"github.com/TachyonNexus/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wire"
 )
 
 // RandomFileBlockInfo generates a random instance of wire.FileBlockInfo.

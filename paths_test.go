@@ -15,10 +15,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TachyonNexus/alluxio-go/option"
-	"github.com/TachyonNexus/alluxio-go/optiontest"
-	"github.com/TachyonNexus/alluxio-go/wire"
-	"github.com/TachyonNexus/alluxio-go/wiretest"
+	"github.com/Alluxio/alluxio-go/option"
+	"github.com/Alluxio/alluxio-go/optiontest"
+	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wiretest"
 )
 
 func init() {

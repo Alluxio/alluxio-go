@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
-	alluxio "github.com/TachyonNexus/alluxio-go"
-	"github.com/TachyonNexus/alluxio-go/option"
+	alluxio "github.com/Alluxio/alluxio-go"
+	"github.com/Alluxio/alluxio-go/option"
 )
 
 func metadataWorker(fs *alluxio.Client, path string) {
