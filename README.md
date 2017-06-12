@@ -11,8 +11,8 @@ import (
         "fmt"
 	"log"
 
-	alluxio "github.com/TachyonNexus/alluxio-go"
-	"github.com/TachyonNexus/alluxio-go/option"
+	alluxio "github.com/alluxio/alluxio-go"
+	"github.com/alluxio/alluxio-go/option"
 )
 
 
