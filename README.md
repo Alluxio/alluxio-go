@@ -1,6 +1,6 @@
 # Go Library for the Alluxio File System API
 
-To get started, fetch the repository into your Go worker space using `go get -d github.com/Alluxio/alluxio-go`.
+To get started, fetch the repository into your Go workspace using `go get -d github.com/Alluxio/alluxio-go`.
 
 Your Go applications can then interact with Alluxio as follows:
 
@@ -26,4 +26,4 @@ func main() {
 }
 ```
 
-For a list of all supported API calls, see `https://github.com/Alluxio/alluxio-go/blob/master/paths.go`.
+For a list of all supported API calls, see https://github.com/Alluxio/alluxio-go/blob/master/paths.go.
