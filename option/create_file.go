@@ -1,6 +1,6 @@
 package option
 
-import "github.com/Alluxio/alluxio-go/wire"
+import "github.com/alluxio/alluxio-go/wire"
 
 // CreateFile holds the options for creating a file.
 type CreateFile struct {

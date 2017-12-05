@@ -1,6 +1,6 @@
 package optiontest
 
-import "github.com/Alluxio/alluxio-go/option"
+import "github.com/alluxio/alluxio-go/option"
 
 // RandomRename creates a random instance of option.Rename.
 func RandomRename() option.Rename {

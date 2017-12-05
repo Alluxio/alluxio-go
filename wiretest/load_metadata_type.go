@@ -3,7 +3,7 @@ package wiretest
 import (
 	"math/rand"
 
-	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/alluxio/alluxio-go/wire"
 )
 
 // RandomLoadMetadataType generates a random instance of wire.LoadMetadataType.

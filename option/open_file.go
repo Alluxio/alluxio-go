@@ -1,7 +1,7 @@
 package option
 
 import (
-	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/alluxio/alluxio-go/wire"
 )
 
 // OpenFile holds the options for opening a file.
