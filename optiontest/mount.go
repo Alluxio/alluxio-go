@@ -3,8 +3,8 @@ package optiontest
 import (
 	"math/rand"
 
-	"github.com/Alluxio/alluxio-go/option"
-	"github.com/Alluxio/alluxio-go/wiretest"
+	"github.com/alluxio/alluxio-go/option"
+	"github.com/alluxio/alluxio-go/wiretest"
 )
 
 // RandomMount creates a random instance of option.Mount.

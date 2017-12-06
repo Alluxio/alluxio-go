@@ -1,6 +1,6 @@
 package option
 
-import "github.com/Alluxio/alluxio-go/wire"
+import "github.com/alluxio/alluxio-go/wire"
 
 // SetAttribute holds the options for setting path attributes.
 type SetAttribute struct {

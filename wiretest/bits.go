@@ -3,7 +3,7 @@ package wiretest
 import (
 	"math/rand"
 
-	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/alluxio/alluxio-go/wire"
 )
 
 // RandomBits generates a random instace of wire.Bits.

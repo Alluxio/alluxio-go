@@ -1,8 +1,8 @@
 package alluxio
 
 import (
-	"github.com/Alluxio/alluxio-go/option"
-	"github.com/Alluxio/alluxio-go/wire"
+	"github.com/alluxio/alluxio-go/option"
+	"github.com/alluxio/alluxio-go/wire"
 )
 
 var (
