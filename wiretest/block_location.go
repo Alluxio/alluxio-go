@@ -3,7 +3,7 @@ package wiretest
 import (
 	"math/rand"
 
-	"github.com/alluxio/alluxio-go/wire"
+	"github.com/Alluxio/alluxio-go/wire"
 )
 
 // RandomBlockLocation generates a random instance of wire.BlockLocation.

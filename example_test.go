@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/alluxio/alluxio-go/option"
+	"github.com/Alluxio/alluxio-go/option"
 )
 
 func ExampleClient_download() {
